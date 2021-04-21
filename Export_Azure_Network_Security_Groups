@@ -1,0 +1,32 @@
+# PowerShell Script to export Azure Network Security Groups in CSV format. Created by Prashant Sahu http://www.prashantsahu.com
+
+
+$outputfinal=@()
+foreach ( $Subscription in $(Get-AzSubscription| Where-Object {$_.State -ne "Disabled"}) )
+{
+Select-AzSubscription -SubscriptionId $Subscription.SubscriptionId
+$nsgs=Get-AzNetworkSecurityGroup
+foreach ($nsg in $nsgs)
+{
+$securityrules=$nsg.SecurityRules
+foreach ($securityrule in $securityrules)
+{
+$outputtemp = "" | SELECT  NSGName,NSGLocation,RGName,Direction,Priority,RuleName,DestinationPort,Protocol,SourceAddress,SourcePort,DestinationAddress,Action,Description
+$outputtemp.NSGName=$nsg.name
+$outputtemp.NSGLocation=$nsg.location
+$outputtemp.RGName=$nsg.ResourceGroupName
+$outputtemp.Direction=$securityrule.direction
+$outputtemp.Priority=$securityrule.Priority
+$outputtemp.RuleName=$securityrule.Name
+$outputtemp.DestinationPort=$securityrule.DestinationPortRange -join ", "
+$outputtemp.Protocol=$securityrule.Protocol -join ", "
+$outputtemp.SourceAddress=$securityrule.SourceAddressPrefix -join ", "
+$outputtemp.SourcePort=$securityrule.SourcePortRange -join ", "
+$outputtemp.DestinationAddress=$securityrule.DestinationAddressPrefix -join ", "
+$outputtemp.Action=$securityrule.Access
+$outputtemp.Description=$securityrule.Description
+$outputfinal += $outputtemp
+}
+}
+}
+$outputfinal | Export-Csv ./clouddrive/.cloudconsole/NSGs_"$((Get-Date).ToString("yyyyMMdd_HHmmss")).csv" -NoTypeInformation
