@@ -1,0 +1,7 @@
+$rts=Get-Azroutetable
+foreach ($rt in $rts) 
+{ 
+$RTIdSplit=$rt.Id.Split("/")
+$rtname=$RTIdSplit[8]
+Export-AzResourceGroup -ResourceGroupName $rt.Resourcegroupname -Path ./clouddrive/shell-exports/$rtname -Resource $rt.Id
+}
