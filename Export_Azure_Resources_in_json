@@ -1,4 +1,8 @@
+  
+# PowerShell Script to export Azure resources in json format. Created by Prashant Sahu http://www.prashantsahu.com.
+# To see more such scripts in action, please visit http://www.networkglaxy.org
 
+# This section exports NSGs and Route-Tables in separate json files with the location and resource name as filename
 foreach ( $Subscription in $(Get-AzSubscription| Where-Object {$_.State -ne "Disabled"}) )
 {
 Select-AzSubscription -SubscriptionId $Subscription.SubscriptionId
@@ -23,3 +27,6 @@ $nsgfilename=$nsglocation + "_" + $nsgname
 Export-AzResourceGroup -ResourceGroupName $nsg.Resourcegroupname -Path ./clouddrive/shell-exports/$nsgfilename -Resource $nsg.Id
 }
 }
+
+# This will export complete resource-group including all the resources in it.
+Export-AzResourceGroup -ResourceGroupName "TestGroup" -Path ./clouddrive/shell-exports
