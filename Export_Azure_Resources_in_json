@@ -1,0 +1,25 @@
+
+foreach ( $Subscription in $(Get-AzSubscription| Where-Object {$_.State -ne "Disabled"}) )
+{
+Select-AzSubscription -SubscriptionId $Subscription.SubscriptionId
+
+$rts=Get-Azroutetable
+foreach ($rt in $rts) 
+{ 
+$RTIdSplit=$rt.Id.Split("/")
+$rtlocation=$rt.Location
+$rtname=$RTIdSplit[8]
+$rtfilename=$rtlocation + "_" + $rtname
+Export-AzResourceGroup -ResourceGroupName $rt.Resourcegroupname -Path ./clouddrive/shell-exports/$rtfilename -Resource $rt.Id
+}
+
+$nsgs=Get-AzNetworkSecurityGroup
+foreach ($nsg in $nsgs) 
+{ 
+$NSGIdSplit=$nsg.Id.Split("/")
+$nsglocation=$nsg.Location
+$nsgname=$NSGIdSplit[8]
+$nsgfilename=$nsglocation + "_" + $nsgname
+Export-AzResourceGroup -ResourceGroupName $nsg.Resourcegroupname -Path ./clouddrive/shell-exports/$nsgfilename -Resource $nsg.Id
+}
+}
