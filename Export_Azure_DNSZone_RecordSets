@@ -1,0 +1,31 @@
+# PowerShell Script to export Azure Route Tables in CSV format. Created by Prashant Sahu http://www.prashantsahu.com.
+# To see more such scripts in action, please visit http://www.networkglaxy.org
+
+
+Set-AzContext -SubscriptionId 2gdj2342-gl39-390r-h208-84957dg897g8
+
+$outputfinal=@()
+$zones=Get-AzDnsZone
+foreach ($zone in $zones) 
+{ 
+$Zonename=$zone.name
+$Resourcegroup=$zone.ResourceGroupName
+$DNSRecords=Get-AzDnsRecordSet -ZoneName $Zonename -ResourceGroupName $Resourcegroup
+foreach ($DNSRecord in $DNSRecords)
+{
+$outputtemp = "" | SELECT ZoneName,RecordType,RecordName,RecordValue1,RecordValue2,RecordValue3,RecordValue4,RecordValue5,RecordValue6,RecordValue7
+$outputtemp.ZoneName= $DNSRecord.ZoneName
+$outputtemp.RecordType=$DNSRecord.RecordType
+$outputtemp.RecordName=$DNSRecord.Name
+$outputtemp.RecordValue1=$DNSRecord.Records[0]
+$outputtemp.RecordValue2=$DNSRecord.Records[1]
+$outputtemp.RecordValue3=$DNSRecord.Records[2]
+$outputtemp.RecordValue4=$DNSRecord.Records[3]
+$outputtemp.RecordValue5=$DNSRecord.Records[4]
+$outputtemp.RecordValue6=$DNSRecord.Records[5]
+$outputtemp.RecordValue7=$DNSRecord.Records[6]
+$outputfinal += $outputtemp 
+}
+}
+$outputfinal |export-csv ./clouddrive/shell-exports/DNSdata_"$((Get-Date).ToString("yyyyMMdd_HHmmss")).csv" -NoTypeInformation
+
