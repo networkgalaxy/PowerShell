@@ -1,4 +1,4 @@
-# PowerShell Script to export Azure Route Tables in CSV format. Created by Prashant Sahu http://www.prashantsahu.com.
+# PowerShell Script to export RecordSet from Azure DNS in CSV format. Created by Prashant Sahu http://www.prashantsahu.com.
 # To see more such scripts in action, please visit http://www.networkglaxy.org
 
 
