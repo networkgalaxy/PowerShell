@@ -1,0 +1,23 @@
+# This PowerShell Script is for creating VNet peering from Azure Automation Acount using system managed identity
+
+
+# Ensures you do not inherit an AzContext in your runbook
+Disable-AzContextAutosave -Scope Process
+
+# Connect to Azure with system-assigned managed identity
+$AzureContext = (Connect-AzAccount -Identity).context
+
+# set and store context
+$AzureContext = Set-AzContext -SubscriptionName $AzureContext.Subscription -DefaultProfile $AzureContext
+
+# Define VNet1
+$vnet1 = Get-AzVirtualNetwork -Name vnet-eus2-infra-001 -ResourceGroupName rg-eus2-infra-net-001
+
+# Define VNet2
+$vnet2 = Get-AzVirtualNetwork -Name vnet-eus2-recovery-001 -ResourceGroupName rg-eus2-recovery-net-001
+
+# Peer VNet1 to VNet2.
+Add-AzVirtualNetworkPeering -Name 'peer_vnet-eus2-infra-001_to_vnet-eus2-recovery-001' -VirtualNetwork $vnet1 -RemoteVirtualNetworkId $vnet2.Id -AllowGatewayTransit
+
+# Peer VNet2 to VNet1.
+Add-AzVirtualNetworkPeering -Name 'peer_vnet-eus2-recovery-001_to_vnet-eus2-infra-001' -VirtualNetwork $vnet2 -RemoteVirtualNetworkId $vnet1.Id -UseRemoteGateways
